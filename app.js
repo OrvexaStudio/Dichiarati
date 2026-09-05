@@ -1101,132 +1101,104 @@ function resetCreator() {
 
 function loadDeclarationFromUrl() {
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+    const params = new URLSearchParams(
+        window.location.search
+    );
 
-
-    const encoded =
-        params.get("d");
-
-
-    /*
-     * Se non c'è ?d=...
-     * siamo semplicemente nella home.
-     */
+    const encoded = params.get("d");
 
     if (!encoded) {
         return;
     }
 
-
-    const data =
-        decodeData(encoded);
-
+    const data = decodeData(encoded);
 
     if (!data) {
-
         showInvalidDeclaration();
-
         return;
-
     }
 
-
     /*
-     * COMPATIBILITÀ CON I VECCHI LINK
-     *
-     * Vecchio sistema:
-     * creatorName
-     * targetName
-     *
-     * Nuovo sistema:
-     * senderName
-     * recipientName
+     * SUPPORTO SIA PER I NUOVI LINK
+     * CHE PER I VECCHI LINK.
      */
 
-    const senderName =
+    const creatorName =
         data.senderName ||
         data.creatorName ||
         "";
 
-
-    const recipientName =
+    const targetName =
         data.recipientName ||
         data.targetName ||
         "";
 
+    const phone =
+        normalizePhone(data.phone || "");
 
     /*
-     * Controlliamo che il link
-     * contenga tutti i dati necessari.
+     * Controllo dati.
      */
 
     if (
         !Array.isArray(data.texts) ||
         data.texts.length === 0 ||
-        !senderName ||
-        !recipientName ||
-        !data.phone
+        !creatorName ||
+        !targetName ||
+        !phone
     ) {
 
         showInvalidDeclaration();
-
         return;
-
     }
 
-
     /*
-     * Normalizziamo i dati.
+     * Creiamo una struttura unica
+     * che userà tutta l'app.
      */
 
-    data.senderName =
-        senderName;
+    declarationData = {
 
+        id:
+            data.id || generateUniqueId(),
 
-    data.recipientName =
-        recipientName;
+        gender:
+            data.gender || "",
 
+        creatorName:
+            creatorName,
 
-    data.phone =
-        normalizePhone(
-            data.phone
-        );
+        targetName:
+            targetName,
 
+        phone:
+            phone,
 
-    if (!data.phone) {
+        texts:
+            data.texts,
 
-        showInvalidDeclaration();
+        yesMessage:
+            data.yesMessage || "",
 
-        return;
+        noMessage:
+            data.noMessage || "",
 
-    }
+        createdAt:
+            data.createdAt || Date.now()
 
+    };
 
-    /*
-     * Da qui in poi l'app utilizza
-     * esclusivamente questi nomi.
-     */
+    currentDeclarationPage = 0;
 
-    declarationData =
-        data;
-
-
-    currentDeclarationPage =
-        0;
-
+    selectedAnswerMessage = "";
 
     showDeclarationPage();
-
 
     showScreen(
         declarationScreen
     );
 
 }
-
 
 /* =========================================================
    MOSTRA PAGINA DELLA DICHIARAZIONE
@@ -1266,8 +1238,8 @@ function showDeclarationPage() {
 
     if ($("#declarationRecipient")) {
 
-        $("#declarationRecipient").textContent =
-            `Per ${declarationData.recipientName}`;
+       $("#declarationRecipient").textContent =
+    `Per ${declarationData.targetName}`;
 
     }
 
@@ -1379,9 +1351,8 @@ function showFinalQuestion() {
      */
 
     if ($("#questionTitle")) {
-
-        $("#questionTitle").textContent =
-            `${declarationData.recipientName}, vuoi stare con me?`;
+$("#questionTitle").textContent =
+    `${declarationData.targetName}, vuoi stare con me?`;
 
     }
 
