@@ -525,9 +525,8 @@ if ($("#generateButton")) {
                 gender:
                     selectedGender,
 
-                creatorName,
-
-                targetName,
+senderName: creatorName,
+recipientName: targetName,
 
                 phone,
 
@@ -947,8 +946,8 @@ function showDeclarationPage() {
 
     if ($("#declarationRecipient")) {
 
-        $("#declarationRecipient").textContent =
-            `Per ${declarationData.targetName}`;
+$("#declarationRecipient").textContent =
+    `Per ${declarationData.recipientName}`;
 
     }
 
@@ -1060,8 +1059,8 @@ function showFinalQuestion() {
 
     if ($("#questionTitle")) {
 
-        $("#questionTitle").textContent =
-            `${declarationData.targetName}, vuoi stare con me?`;
+$("#questionTitle").textContent =
+    `${declarationData.recipientName}, vuoi stare con me?`;
 
     }
 
