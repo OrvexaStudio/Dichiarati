@@ -1,0 +1,495 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --background: #0b0b0d;
+    --surface: #151518;
+    --surface-light: #202025;
+    --text: #ffffff;
+    --muted: #9b9ba3;
+    --border: rgba(255, 255, 255, 0.12);
+    --accent: #ffffff;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--text);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.screen {
+    display: none;
+    min-height: 100vh;
+}
+
+.screen.active {
+    display: flex;
+}
+
+
+/* HOME */
+
+#homeScreen {
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+}
+
+.home-content {
+    width: 100%;
+    max-width: 650px;
+}
+
+.eyebrow {
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 25px;
+}
+
+h1 {
+    font-size: clamp(48px, 9vw, 90px);
+    line-height: 0.95;
+    letter-spacing: -4px;
+    margin-bottom: 30px;
+}
+
+.home-description {
+    max-width: 500px;
+    margin: 0 auto 40px;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+
+/* BUTTONS */
+
+.primary-button {
+    border: none;
+    background: var(--accent);
+    color: #000;
+    border-radius: 14px;
+    padding: 16px 24px;
+    font-weight: 600;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+}
+
+.primary-button:active {
+    transform: scale(0.98);
+}
+
+.secondary-button {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    border-radius: 14px;
+    padding: 15px;
+}
+
+.back-button {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    padding: 15px;
+}
+
+
+/* CREAZIONE */
+
+#createScreen {
+    justify-content: center;
+    padding: 50px 20px;
+}
+
+.create-container {
+    width: 100%;
+    max-width: 620px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    height: 3px;
+    background: var(--surface-light);
+    border-radius: 10px;
+    margin-bottom: 50px;
+    overflow: hidden;
+}
+
+#progressBar {
+    width: 33.333%;
+    height: 100%;
+    background: white;
+    transition: width 0.3s ease;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+    animation: fadeUp 0.4s ease;
+}
+
+h2 {
+    font-size: clamp(36px, 7vw, 58px);
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 35px;
+}
+
+label {
+    display: block;
+    margin: 24px 0 9px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+input,
+textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: white;
+    border-radius: 13px;
+    padding: 15px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+    border-color: rgba(255,255,255,0.45);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.small-note {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+.next-button {
+    width: 100%;
+    margin-top: 30px;
+}
+
+
+/* GENERE */
+
+.gender-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.gender-button {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 13px;
+    padding: 16px;
+}
+
+.gender-button.selected {
+    background: white;
+    color: black;
+}
+
+
+/* TESTI */
+
+.step-description {
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: -15px;
+    margin-bottom: 30px;
+}
+
+.text-card {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.text-card-number {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.remove-text {
+    position: absolute;
+    top: 28px;
+    right: 10px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+}
+
+.navigation-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.navigation-buttons .primary-button {
+    flex: 1;
+}
+
+.preset-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.preset-button {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 100px;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+
+/* LINK */
+
+#generatedScreen,
+#questionScreen,
+#resultScreen {
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.generated-container,
+.question-container,
+.result-container {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.generated-container p,
+.result-container p {
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.link-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.link-box input {
+    min-width: 0;
+}
+
+.link-box button {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: white;
+    padding: 0 18px;
+    border-radius: 13px;
+}
+
+
+/* DICHIARAZIONE */
+
+#declarationScreen {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(
+            circle at center,
+            #25252b 0%,
+            #0b0b0d 65%
+        );
+    overflow: hidden;
+}
+
+.declaration-container {
+    width: 100%;
+    max-width: 850px;
+    padding: 30px;
+    text-align: center;
+}
+
+.declaration-content {
+    animation: declarationIn 0.7s ease;
+}
+
+.declaration-recipient {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 40px;
+}
+
+.declaration-text {
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(36px, 7vw, 75px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+    font-weight: 600;
+}
+
+.continue-button {
+    margin-top: 50px;
+}
+
+.declaration-progress {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--muted);
+    font-size: 12px;
+}
+
+
+/* DOMANDA */
+
+.question-container h2 {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.answer-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.answer-button {
+    border: none;
+    border-radius: 15px;
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.yes-button {
+    background: white;
+    color: black;
+}
+
+.no-button {
+    background: var(--surface);
+    color: white;
+    border: 1px solid var(--border);
+}
+
+
+/* ANIMAZIONI */
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes declarationIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    h1 {
+        letter-spacing: -3px;
+    }
+
+    h2 {
+        letter-spacing: -1.5px;
+    }
+
+    .navigation-buttons {
+        flex-direction: column-reverse;
+    }
+
+    .navigation-buttons button {
+        width: 100%;
+    }
+
+    .answer-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .link-box {
+        flex-direction: column;
+    }
+
+    .link-box button {
+        padding: 14px;
+    }
+
+}
