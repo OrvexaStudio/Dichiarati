@@ -35,6 +35,7 @@ const textsContainer = $("#textsContainer");
 ========================================================= */
 
 function showScreen(screen) {
+
     document.querySelectorAll(".screen").forEach((element) => {
         element.classList.remove("active");
     });
@@ -55,11 +56,17 @@ function showScreen(screen) {
 ========================================================= */
 
 if ($("#startButton")) {
+
     $("#startButton").addEventListener("click", () => {
+
         resetCreator();
+
         showScreen(createScreen);
+
         updateStep();
+
     });
+
 }
 
 
@@ -68,6 +75,7 @@ if ($("#startButton")) {
 ========================================================= */
 
 $$(".gender-button").forEach((button) => {
+
     button.addEventListener("click", () => {
 
         $$(".gender-button").forEach((btn) => {
@@ -76,8 +84,11 @@ $$(".gender-button").forEach((button) => {
 
         button.classList.add("selected");
 
-        selectedGender = button.dataset.gender;
+        selectedGender =
+            button.dataset.gender || "";
+
     });
+
 });
 
 
@@ -88,16 +99,22 @@ $$(".gender-button").forEach((button) => {
 function updateStep() {
 
     formSteps.forEach((step) => {
+
         step.classList.toggle(
             "active",
             Number(step.dataset.step) === currentStep
         );
+
     });
 
+
     if ($("#stepCounter")) {
+
         $("#stepCounter").textContent =
             `${currentStep} / 3`;
+
     }
+
 
     const labels = [
         "Informazioni",
@@ -105,15 +122,22 @@ function updateStep() {
         "La risposta"
     ];
 
+
     if ($("#stepLabel")) {
+
         $("#stepLabel").textContent =
             labels[currentStep - 1];
+
     }
 
+
     if ($("#progressBar")) {
+
         $("#progressBar").style.width =
             `${(currentStep / 3) * 100}%`;
+
     }
+
 }
 
 
@@ -128,42 +152,68 @@ if (nextButton) {
     nextButton.addEventListener("click", () => {
 
         const creatorName =
-            $("#creatorName").value.trim();
+            $("#creatorName")?.value.trim() || "";
 
         const targetName =
-            $("#targetName").value.trim();
+            $("#targetName")?.value.trim() || "";
 
         const phone =
-            normalizePhone($("#phoneNumber").value);
+            normalizePhone(
+                $("#phoneNumber")?.value || ""
+            );
+
 
         if (!selectedGender) {
-            alert("Seleziona se sei un ragazzo o una ragazza.");
+
+            alert(
+                "Seleziona se sei un ragazzo o una ragazza."
+            );
+
             return;
         }
+
 
         if (!creatorName) {
-            alert("Inserisci il tuo nome.");
+
+            alert(
+                "Inserisci il tuo nome."
+            );
+
             return;
         }
+
 
         if (!targetName) {
-            alert("Inserisci il nome della persona.");
+
+            alert(
+                "Inserisci il nome della persona."
+            );
+
             return;
         }
 
+
         if (!phone) {
-            alert("Inserisci un numero WhatsApp valido.");
+
+            alert(
+                "Inserisci un numero WhatsApp valido."
+            );
+
             return;
         }
+
 
         currentStep = 2;
 
         updateStep();
 
+
         if (texts.length === 0) {
             addText();
         }
+
     });
+
 }
 
 
@@ -174,17 +224,29 @@ if (nextButton) {
 function addText(initialValue = "") {
 
     if (texts.length >= 10) {
-        alert("Puoi inserire massimo 10 schermate.");
+
+        alert(
+            "Puoi inserire massimo 10 schermate."
+        );
+
         return;
     }
 
-    const index = texts.length;
+
+    const index =
+        texts.length;
+
 
     texts.push(initialValue);
 
-    const card = document.createElement("div");
 
-    card.className = "text-card";
+    const card =
+        document.createElement("div");
+
+
+    card.className =
+        "text-card";
+
 
     card.innerHTML = `
         <div class="text-card-number">
@@ -213,19 +275,35 @@ function addText(initialValue = "") {
         }
     `;
 
-    textsContainer.appendChild(card);
+
+    if (textsContainer) {
+        textsContainer.appendChild(card);
+    }
+
 
     const textarea =
         card.querySelector(".declaration-input");
 
-    textarea.value = initialValue;
 
-    textarea.addEventListener("input", () => {
-        texts[index] = textarea.value;
-    });
+    if (textarea) {
+
+        textarea.value =
+            initialValue;
+
+
+        textarea.addEventListener("input", () => {
+
+            texts[index] =
+                textarea.value;
+
+        });
+
+    }
+
 
     const removeButton =
         card.querySelector(".remove-text");
+
 
     if (removeButton) {
 
@@ -236,9 +314,12 @@ function addText(initialValue = "") {
             renderTexts();
 
         });
+
     }
 
+
     updateAddButton();
+
 }
 
 
@@ -248,17 +329,27 @@ function addText(initialValue = "") {
 
 function renderTexts() {
 
-    const savedTexts = [...texts];
+    const savedTexts =
+        [...texts];
 
-    textsContainer.innerHTML = "";
+
+    if (textsContainer) {
+        textsContainer.innerHTML = "";
+    }
+
 
     texts = [];
 
+
     savedTexts.forEach((text) => {
+
         addText(text);
+
     });
 
+
     updateAddButton();
+
 }
 
 
@@ -268,24 +359,31 @@ function renderTexts() {
 
 function updateAddButton() {
 
-    const button = $("#addTextButton");
+    const button =
+        $("#addTextButton");
+
 
     if (!button) {
         return;
     }
 
+
     if (texts.length >= 10) {
 
         button.disabled = true;
+
         button.textContent =
             "Massimo 10 schermate";
 
     } else {
 
         button.disabled = false;
+
         button.textContent =
             "+ Aggiungi schermata";
+
     }
+
 }
 
 
@@ -307,9 +405,11 @@ if ($("#goToStep3")) {
 
     $("#goToStep3").addEventListener("click", () => {
 
-        const validTexts = texts
-            .map((text) => text.trim())
-            .filter(Boolean);
+        const validTexts =
+            texts
+                .map((text) => text.trim())
+                .filter(Boolean);
+
 
         if (validTexts.length === 0) {
 
@@ -320,13 +420,17 @@ if ($("#goToStep3")) {
             return;
         }
 
-        texts = validTexts;
+
+        texts =
+            validTexts;
+
 
         currentStep = 3;
 
         updateStep();
 
         setDefaultMessages();
+
     });
 
 }
@@ -379,7 +483,9 @@ function setDefaultMessages() {
 
         $("#yesMessage").value =
             "Ciao! Ho visto la tua dichiarazione e la mia risposta è sì.";
+
     }
+
 
     if (
         $("#noMessage") &&
@@ -388,6 +494,7 @@ function setDefaultMessages() {
 
         $("#noMessage").value =
             "Ciao! Ho visto la tua dichiarazione. Ti ringrazio per quello che mi hai scritto, ma la mia risposta è no.";
+
     }
 
 }
@@ -406,12 +513,15 @@ $$(".preset-button").forEach((button) => {
                 button.dataset.target
             );
 
+
         if (!target) {
             return;
         }
 
+
         target.value =
-            button.dataset.text;
+            button.dataset.text || "";
+
 
         target.dispatchEvent(
             new Event("input", {
@@ -435,21 +545,25 @@ if ($("#generateButton")) {
         () => {
 
             const creatorName =
-                $("#creatorName").value.trim();
+                $("#creatorName")?.value.trim() || "";
+
 
             const targetName =
-                $("#targetName").value.trim();
+                $("#targetName")?.value.trim() || "";
+
 
             const phone =
                 normalizePhone(
-                    $("#phoneNumber").value
+                    $("#phoneNumber")?.value || ""
                 );
 
+
             const yesMessage =
-                $("#yesMessage").value.trim();
+                $("#yesMessage")?.value.trim() || "";
+
 
             const noMessage =
-                $("#noMessage").value.trim();
+                $("#noMessage")?.value.trim() || "";
 
 
             const cleanTexts =
@@ -518,30 +632,52 @@ if ($("#generateButton")) {
             }
 
 
+            /*
+             * IMPORTANTE
+             *
+             * senderName =
+             * persona che crea la dichiarazione
+             *
+             * recipientName =
+             * persona che riceve la dichiarazione
+             */
+
             declarationData = {
 
-                id: generateUniqueId(),
+                id:
+                    generateUniqueId(),
 
                 gender:
                     selectedGender,
 
-senderName: creatorName,
-recipientName: targetName,
+                senderName:
+                    creatorName,
 
-                phone,
+                recipientName:
+                    targetName,
+
+                phone:
+                    phone,
 
                 texts:
                     cleanTexts,
 
-                yesMessage,
+                yesMessage:
+                    yesMessage,
 
-                noMessage,
+                noMessage:
+                    noMessage,
 
                 createdAt:
                     Date.now()
 
             };
 
+
+            /*
+             * Codifichiamo tutti i dati
+             * direttamente nel link.
+             */
 
             const encoded =
                 encodeData(
@@ -550,9 +686,14 @@ recipientName: targetName,
 
 
             /*
-             * Usiamo l'URL reale della pagina.
-             * Funziona anche se il repository è dentro
-             * una sottocartella GitHub Pages.
+             * Prendiamo solamente l'indirizzo
+             * della pagina attuale.
+             *
+             * Funziona anche su:
+             *
+             * /Dichiarati/
+             *
+             * /Dichiarati/index.html
              */
 
             const baseUrl =
@@ -565,8 +706,12 @@ recipientName: targetName,
                 `${baseUrl}?d=${encoded}`;
 
 
-            $("#generatedLink").value =
-                url;
+            if ($("#generatedLink")) {
+
+                $("#generatedLink").value =
+                    url;
+
+            }
 
 
             showScreen(
@@ -588,20 +733,25 @@ function generateUniqueId() {
     const characters =
         "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
 
+
     let id = "";
+
 
     for (let i = 0; i < 10; i++) {
 
-        id += characters[
-            Math.floor(
-                Math.random() *
-                characters.length
-            )
-        ];
+        id +=
+            characters[
+                Math.floor(
+                    Math.random() *
+                    characters.length
+                )
+            ];
 
     }
 
+
     return id;
+
 }
 
 
@@ -611,31 +761,62 @@ function generateUniqueId() {
 
 function encodeData(data) {
 
-    const json =
-        JSON.stringify(data);
+    try {
 
-    const bytes =
-        new TextEncoder().encode(json);
+        const json =
+            JSON.stringify(data);
 
-    let binary = "";
 
-    for (
-        let i = 0;
-        i < bytes.length;
-        i++
-    ) {
+        const bytes =
+            new TextEncoder().encode(json);
 
-        binary +=
-            String.fromCharCode(
-                bytes[i]
-            );
+
+        let binary = "";
+
+
+        const chunkSize = 0x8000;
+
+
+        for (
+            let i = 0;
+            i < bytes.length;
+            i += chunkSize
+        ) {
+
+            const chunk =
+                bytes.subarray(
+                    i,
+                    Math.min(
+                        i + chunkSize,
+                        bytes.length
+                    )
+                );
+
+
+            binary +=
+                String.fromCharCode(
+                    ...chunk
+                );
+
+        }
+
+
+        return btoa(binary)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+
+    } catch (error) {
+
+        console.error(
+            "Errore nella codifica:",
+            error
+        );
+
+        return "";
 
     }
 
-    return btoa(binary)
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
 }
 
 
@@ -646,6 +827,11 @@ function encodeData(data) {
 function decodeData(encoded) {
 
     try {
+
+        if (!encoded) {
+            return null;
+        }
+
 
         let base64 =
             encoded
@@ -695,12 +881,14 @@ function decodeData(encoded) {
     } catch (error) {
 
         console.error(
-            "Errore nella decodifica:",
+            "Errore nella decodifica del link:",
             error
         );
 
         return null;
+
     }
+
 }
 
 
@@ -717,14 +905,22 @@ if ($("#copyLinkButton")) {
             const input =
                 $("#generatedLink");
 
+
+            if (!input || !input.value) {
+                return;
+            }
+
+
             try {
 
                 await navigator.clipboard.writeText(
                     input.value
                 );
 
+
                 $("#copyLinkButton").textContent =
                     "Copiato";
+
 
                 setTimeout(() => {
 
@@ -732,6 +928,7 @@ if ($("#copyLinkButton")) {
                         "Copia";
 
                 }, 2000);
+
 
             } catch (error) {
 
@@ -760,15 +957,23 @@ if ($("#shareButton")) {
         () => {
 
             const url =
-                $("#generatedLink").value;
+                $("#generatedLink")?.value || "";
+
+
+            if (!url) {
+                return;
+            }
+
 
             const message =
                 `Ho qualcosa da dirti...\n\n${url}`;
+
 
             const whatsappUrl =
                 `https://wa.me/?text=${encodeURIComponent(
                     message
                 )}`;
+
 
             window.open(
                 whatsappUrl,
@@ -793,9 +998,11 @@ if ($("#newDeclarationButton")) {
 
             resetCreator();
 
+
             showScreen(
                 createScreen
             );
+
 
             updateStep();
 
@@ -825,41 +1032,66 @@ function resetCreator() {
 
 
     if ($("#creatorName")) {
-        $("#creatorName").value = "";
+
+        $("#creatorName").value =
+            "";
+
     }
+
 
     if ($("#targetName")) {
-        $("#targetName").value = "";
+
+        $("#targetName").value =
+            "";
+
     }
+
 
     if ($("#phoneNumber")) {
-        $("#phoneNumber").value = "";
+
+        $("#phoneNumber").value =
+            "";
+
     }
+
 
     if ($("#yesMessage")) {
-        $("#yesMessage").value = "";
+
+        $("#yesMessage").value =
+            "";
+
     }
 
+
     if ($("#noMessage")) {
-        $("#noMessage").value = "";
+
+        $("#noMessage").value =
+            "";
+
     }
 
 
     $$(".gender-button").forEach(
         (button) => {
+
             button.classList.remove(
                 "selected"
             );
+
         }
     );
 
 
     if (textsContainer) {
-        textsContainer.innerHTML = "";
+
+        textsContainer.innerHTML =
+            "";
+
     }
 
 
     updateAddButton();
+
 }
 
 
@@ -879,10 +1111,13 @@ function loadDeclarationFromUrl() {
         params.get("d");
 
 
+    /*
+     * Se non c'è ?d=...
+     * siamo semplicemente nella home.
+     */
+
     if (!encoded) {
-
         return;
-
     }
 
 
@@ -890,11 +1125,49 @@ function loadDeclarationFromUrl() {
         decodeData(encoded);
 
 
+    if (!data) {
+
+        showInvalidDeclaration();
+
+        return;
+
+    }
+
+
+    /*
+     * COMPATIBILITÀ CON I VECCHI LINK
+     *
+     * Vecchio sistema:
+     * creatorName
+     * targetName
+     *
+     * Nuovo sistema:
+     * senderName
+     * recipientName
+     */
+
+    const senderName =
+        data.senderName ||
+        data.creatorName ||
+        "";
+
+
+    const recipientName =
+        data.recipientName ||
+        data.targetName ||
+        "";
+
+
+    /*
+     * Controlliamo che il link
+     * contenga tutti i dati necessari.
+     */
+
     if (
-        !data ||
         !Array.isArray(data.texts) ||
-        !data.targetName ||
-        !data.creatorName ||
+        data.texts.length === 0 ||
+        !senderName ||
+        !recipientName ||
         !data.phone
     ) {
 
@@ -905,11 +1178,44 @@ function loadDeclarationFromUrl() {
     }
 
 
+    /*
+     * Normalizziamo i dati.
+     */
+
+    data.senderName =
+        senderName;
+
+
+    data.recipientName =
+        recipientName;
+
+
+    data.phone =
+        normalizePhone(
+            data.phone
+        );
+
+
+    if (!data.phone) {
+
+        showInvalidDeclaration();
+
+        return;
+
+    }
+
+
+    /*
+     * Da qui in poi l'app utilizza
+     * esclusivamente questi nomi.
+     */
+
     declarationData =
         data;
 
 
-    currentDeclarationPage = 0;
+    currentDeclarationPage =
+        0;
 
 
     showDeclarationPage();
@@ -930,7 +1236,9 @@ function showDeclarationPage() {
 
     if (
         !declarationData ||
-        !declarationData.texts
+        !Array.isArray(
+            declarationData.texts
+        )
     ) {
 
         return;
@@ -944,10 +1252,22 @@ function showDeclarationPage() {
         ];
 
 
+    /*
+     * QUI DEVE COMPARIRE IL DESTINATARIO.
+     *
+     * Esempio:
+     *
+     * Per Maria
+     *
+     * NON:
+     *
+     * Per Francesco
+     */
+
     if ($("#declarationRecipient")) {
 
-$("#declarationRecipient").textContent =
-    `Per ${declarationData.recipientName}`;
+        $("#declarationRecipient").textContent =
+            `Per ${declarationData.recipientName}`;
 
     }
 
@@ -1011,12 +1331,8 @@ if ($("#continueButton")) {
         "click",
         () => {
 
-            if (
-                !declarationData
-            ) {
-
+            if (!declarationData) {
                 return;
-
             }
 
 
@@ -1026,6 +1342,7 @@ if ($("#continueButton")) {
             ) {
 
                 currentDeclarationPage++;
+
 
                 showDeclarationPage();
 
@@ -1053,14 +1370,18 @@ function showFinalQuestion() {
 
 
     /*
-     * La domanda viene rivolta alla persona
-     * che sta leggendo la dichiarazione.
+     * La domanda è rivolta ESCLUSIVAMENTE
+     * al destinatario.
+     *
+     * Esempio:
+     *
+     * Maria, vuoi stare con me?
      */
 
     if ($("#questionTitle")) {
 
-$("#questionTitle").textContent =
-    `${declarationData.recipientName}, vuoi stare con me?`;
+        $("#questionTitle").textContent =
+            `${declarationData.recipientName}, vuoi stare con me?`;
 
     }
 
@@ -1082,6 +1403,10 @@ if ($("#yesButton")) {
         "click",
         () => {
 
+            /*
+             * È il destinatario a scegliere.
+             */
+
             showResult(true);
 
         }
@@ -1099,6 +1424,10 @@ if ($("#noButton")) {
     $("#noButton").addEventListener(
         "click",
         () => {
+
+            /*
+             * È il destinatario a scegliere.
+             */
 
             showResult(false);
 
@@ -1122,29 +1451,42 @@ function showResult(isYes) {
     if (isYes) {
 
         if ($("#resultEyebrow")) {
+
             $("#resultEyebrow").textContent =
                 "SÌ";
+
         }
 
+
         if ($("#resultTitle")) {
+
             $("#resultTitle").textContent =
                 "Hai detto sì.";
+
         }
+
 
         selectedAnswerMessage =
             declarationData.yesMessage;
 
+
     } else {
 
         if ($("#resultEyebrow")) {
+
             $("#resultEyebrow").textContent =
                 "NO";
+
         }
 
+
         if ($("#resultTitle")) {
+
             $("#resultTitle").textContent =
                 "Hai risposto sinceramente.";
+
         }
+
 
         selectedAnswerMessage =
             declarationData.noMessage;
@@ -1203,6 +1545,11 @@ if ($("#whatsappButton")) {
             }
 
 
+            /*
+             * Questo è il messaggio scelto
+             * dal destinatario.
+             */
+
             const message =
                 selectedAnswerMessage;
 
@@ -1240,6 +1587,12 @@ function normalizePhone(phone) {
         );
 
 
+    /*
+     * 0039...
+     * diventa
+     * 39...
+     */
+
     if (
         clean.startsWith("00")
     ) {
@@ -1251,9 +1604,8 @@ function normalizePhone(phone) {
 
 
     /*
-     * Numero italiano:
-     * se l'utente inserisce 3331234567
-     * diventa +393331234567
+     * Se è già un numero italiano
+     * con prefisso 39.
      */
 
     if (
@@ -1271,6 +1623,10 @@ function normalizePhone(phone) {
     }
 
 
+    /*
+     * Numero italiano senza prefisso.
+     */
+
     if (
         clean.length >= 9
     ) {
@@ -1281,6 +1637,7 @@ function normalizePhone(phone) {
 
 
     return "";
+
 }
 
 
@@ -1354,6 +1711,7 @@ function showInvalidDeclaration() {
 
         </main>
     `;
+
 }
 
 
