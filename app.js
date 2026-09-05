@@ -2,22 +2,22 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
 
-/* =========================
-   STATO
-========================= */
+/* =========================================================
+   STATO APP
+========================================================= */
 
 let selectedGender = "";
 let currentStep = 1;
 let texts = [];
 
 let declarationData = null;
-
 let currentDeclarationPage = 0;
+let selectedAnswerMessage = "";
 
 
-/* =========================
-   ELEMENTI
-========================= */
+/* =========================================================
+   SCHERMATE
+========================================================= */
 
 const homeScreen = $("#homeScreen");
 const createScreen = $("#createScreen");
@@ -27,21 +27,21 @@ const questionScreen = $("#questionScreen");
 const resultScreen = $("#resultScreen");
 
 const formSteps = $$(".form-step");
-
 const textsContainer = $("#textsContainer");
 
 
-/* =========================
-   SCREEN
-========================= */
+/* =========================================================
+   CAMBIO SCHERMATA
+========================================================= */
 
 function showScreen(screen) {
-
     document.querySelectorAll(".screen").forEach((element) => {
         element.classList.remove("active");
     });
 
-    screen.classList.add("active");
+    if (screen) {
+        screen.classList.add("active");
+    }
 
     window.scrollTo({
         top: 0,
@@ -50,27 +50,24 @@ function showScreen(screen) {
 }
 
 
-/* =========================
+/* =========================================================
    HOME
-========================= */
+========================================================= */
 
-$("#startButton").addEventListener("click", () => {
-
-    resetCreator();
-
-    showScreen(createScreen);
-
-    updateStep();
-
-});
+if ($("#startButton")) {
+    $("#startButton").addEventListener("click", () => {
+        resetCreator();
+        showScreen(createScreen);
+        updateStep();
+    });
+}
 
 
-/* =========================
-   GENERE
-========================= */
+/* =========================================================
+   SELEZIONE RAGAZZO / RAGAZZA
+========================================================= */
 
 $$(".gender-button").forEach((button) => {
-
     button.addEventListener("click", () => {
 
         $$(".gender-button").forEach((btn) => {
@@ -80,28 +77,27 @@ $$(".gender-button").forEach((button) => {
         button.classList.add("selected");
 
         selectedGender = button.dataset.gender;
-
     });
-
 });
 
 
-/* =========================
-   STEP
-========================= */
+/* =========================================================
+   STEP CREAZIONE
+========================================================= */
 
 function updateStep() {
 
     formSteps.forEach((step) => {
-
         step.classList.toggle(
             "active",
             Number(step.dataset.step) === currentStep
         );
-
     });
 
-    $("#stepCounter").textContent = `${currentStep} / 3`;
+    if ($("#stepCounter")) {
+        $("#stepCounter").textContent =
+            `${currentStep} / 3`;
+    }
 
     const labels = [
         "Informazioni",
@@ -109,65 +105,73 @@ function updateStep() {
         "La risposta"
     ];
 
-    $("#stepLabel").textContent = labels[currentStep - 1];
+    if ($("#stepLabel")) {
+        $("#stepLabel").textContent =
+            labels[currentStep - 1];
+    }
 
-    $("#progressBar").style.width =
-        `${(currentStep / 3) * 100}%`;
-
+    if ($("#progressBar")) {
+        $("#progressBar").style.width =
+            `${(currentStep / 3) * 100}%`;
+    }
 }
 
 
-/* =========================
-   STEP 1 → 2
-========================= */
+/* =========================================================
+   STEP 1 → STEP 2
+========================================================= */
 
-$(".next-button").addEventListener("click", () => {
+const nextButton = $(".next-button");
 
-    const creatorName =
-        $("#creatorName").value.trim();
+if (nextButton) {
 
-    const targetName =
-        $("#targetName").value.trim();
+    nextButton.addEventListener("click", () => {
 
-    const phone =
-        normalizePhone($("#phoneNumber").value);
+        const creatorName =
+            $("#creatorName").value.trim();
 
-    if (!selectedGender) {
-        alert("Seleziona se sei un ragazzo o una ragazza.");
-        return;
-    }
+        const targetName =
+            $("#targetName").value.trim();
 
-    if (!creatorName) {
-        alert("Inserisci il tuo nome.");
-        return;
-    }
+        const phone =
+            normalizePhone($("#phoneNumber").value);
 
-    if (!targetName) {
-        alert("Inserisci il nome della persona.");
-        return;
-    }
+        if (!selectedGender) {
+            alert("Seleziona se sei un ragazzo o una ragazza.");
+            return;
+        }
 
-    if (!phone) {
-        alert("Inserisci il tuo numero WhatsApp.");
-        return;
-    }
+        if (!creatorName) {
+            alert("Inserisci il tuo nome.");
+            return;
+        }
 
-    currentStep = 2;
+        if (!targetName) {
+            alert("Inserisci il nome della persona.");
+            return;
+        }
 
-    updateStep();
+        if (!phone) {
+            alert("Inserisci un numero WhatsApp valido.");
+            return;
+        }
 
-    if (texts.length === 0) {
-        addText();
-    }
+        currentStep = 2;
 
-});
+        updateStep();
+
+        if (texts.length === 0) {
+            addText();
+        }
+    });
+}
 
 
-/* =========================
-   TESTI
-========================= */
+/* =========================================================
+   AGGIUNTA TESTO
+========================================================= */
 
-function addText() {
+function addText(initialValue = "") {
 
     if (texts.length >= 10) {
         alert("Puoi inserire massimo 10 schermate.");
@@ -176,7 +180,7 @@ function addText() {
 
     const index = texts.length;
 
-    texts.push("");
+    texts.push(initialValue);
 
     const card = document.createElement("div");
 
@@ -196,12 +200,15 @@ function addText() {
 
         ${
             index > 0
-                ? `<button
-                    class="remove-text"
-                    data-index="${index}"
-                >
-                    ×
-                </button>`
+                ? `
+                    <button
+                        type="button"
+                        class="remove-text"
+                        data-index="${index}"
+                    >
+                        ×
+                    </button>
+                `
                 : ""
         }
     `;
@@ -211,10 +218,10 @@ function addText() {
     const textarea =
         card.querySelector(".declaration-input");
 
+    textarea.value = initialValue;
+
     textarea.addEventListener("input", () => {
-
         texts[index] = textarea.value;
-
     });
 
     const removeButton =
@@ -229,131 +236,166 @@ function addText() {
             renderTexts();
 
         });
-
     }
 
     updateAddButton();
-
 }
 
+
+/* =========================================================
+   RIDISEGNA TESTI
+========================================================= */
 
 function renderTexts() {
 
-    textsContainer.innerHTML = "";
+    const savedTexts = [...texts];
 
-    const oldTexts = [...texts];
+    textsContainer.innerHTML = "";
 
     texts = [];
 
-    oldTexts.forEach((text) => {
-
-        addText();
-
-        texts[texts.length - 1] = text;
-
+    savedTexts.forEach((text) => {
+        addText(text);
     });
 
-    const textareas =
-        $$(".declaration-input");
-
-    textareas.forEach((textarea, index) => {
-        textarea.value = texts[index] || "";
-    });
-
+    updateAddButton();
 }
 
+
+/* =========================================================
+   PULSANTE AGGIUNGI
+========================================================= */
 
 function updateAddButton() {
 
     const button = $("#addTextButton");
 
+    if (!button) {
+        return;
+    }
+
     if (texts.length >= 10) {
 
         button.disabled = true;
-        button.textContent = "Massimo 10 schermate";
+        button.textContent =
+            "Massimo 10 schermate";
 
     } else {
 
         button.disabled = false;
-        button.textContent = "+ Aggiungi schermata";
-
+        button.textContent =
+            "+ Aggiungi schermata";
     }
+}
+
+
+if ($("#addTextButton")) {
+
+    $("#addTextButton").addEventListener(
+        "click",
+        () => addText()
+    );
 
 }
 
 
-$("#addTextButton").addEventListener("click", addText);
+/* =========================================================
+   STEP 2 → STEP 3
+========================================================= */
 
+if ($("#goToStep3")) {
 
-/* =========================
-   STEP 2 → 3
-========================= */
+    $("#goToStep3").addEventListener("click", () => {
 
-$("#goToStep3").addEventListener("click", () => {
-
-    const validTexts =
-        texts
+        const validTexts = texts
             .map((text) => text.trim())
             .filter(Boolean);
 
-    if (validTexts.length === 0) {
+        if (validTexts.length === 0) {
 
-        alert("Scrivi almeno una schermata.");
+            alert(
+                "Scrivi almeno una schermata."
+            );
 
-        return;
-    }
+            return;
+        }
 
-    texts = validTexts;
+        texts = validTexts;
 
-    currentStep = 3;
+        currentStep = 3;
 
-    updateStep();
+        updateStep();
 
-    setDefaultMessages();
+        setDefaultMessages();
+    });
 
-});
-
-
-$("#backToStep1").addEventListener("click", () => {
-
-    currentStep = 1;
-
-    updateStep();
-
-});
+}
 
 
-$("#backToStep2").addEventListener("click", () => {
+/* =========================================================
+   TORNA A STEP 1
+========================================================= */
 
-    currentStep = 2;
+if ($("#backToStep1")) {
 
-    updateStep();
+    $("#backToStep1").addEventListener("click", () => {
 
-});
+        currentStep = 1;
+
+        updateStep();
+
+    });
+
+}
 
 
-/* =========================
-   MESSAGGI
-========================= */
+/* =========================================================
+   TORNA A STEP 2
+========================================================= */
+
+if ($("#backToStep2")) {
+
+    $("#backToStep2").addEventListener("click", () => {
+
+        currentStep = 2;
+
+        updateStep();
+
+    });
+
+}
+
+
+/* =========================================================
+   MESSAGGI PREDEFINITI
+========================================================= */
 
 function setDefaultMessages() {
 
-    if (!$("#yesMessage").value) {
+    if (
+        $("#yesMessage") &&
+        !$("#yesMessage").value.trim()
+    ) {
 
         $("#yesMessage").value =
             "Ciao! Ho visto la tua dichiarazione e la mia risposta è sì.";
-
     }
 
-    if (!$("#noMessage").value) {
+    if (
+        $("#noMessage") &&
+        !$("#noMessage").value.trim()
+    ) {
 
         $("#noMessage").value =
             "Ciao! Ho visto la tua dichiarazione. Ti ringrazio per quello che mi hai scritto, ma la mia risposta è no.";
-
     }
 
 }
 
+
+/* =========================================================
+   PRESET MESSAGGI
+========================================================= */
 
 $$(".preset-button").forEach((button) => {
 
@@ -364,253 +406,409 @@ $$(".preset-button").forEach((button) => {
                 button.dataset.target
             );
 
-        target.value = button.dataset.text;
+        if (!target) {
+            return;
+        }
+
+        target.value =
+            button.dataset.text;
+
+        target.dispatchEvent(
+            new Event("input", {
+                bubbles: true
+            })
+        );
 
     });
 
 });
 
 
-/* =========================
-   GENERAZIONE
-========================= */
+/* =========================================================
+   GENERAZIONE DICHIARAZIONE
+========================================================= */
 
-$("#generateButton").addEventListener("click", () => {
+if ($("#generateButton")) {
 
-    const creatorName =
-        $("#creatorName").value.trim();
+    $("#generateButton").addEventListener(
+        "click",
+        () => {
 
-    const targetName =
-        $("#targetName").value.trim();
+            const creatorName =
+                $("#creatorName").value.trim();
 
-    const phone =
-        normalizePhone($("#phoneNumber").value);
+            const targetName =
+                $("#targetName").value.trim();
 
-    const yesMessage =
-        $("#yesMessage").value.trim();
+            const phone =
+                normalizePhone(
+                    $("#phoneNumber").value
+                );
 
-    const noMessage =
-        $("#noMessage").value.trim();
+            const yesMessage =
+                $("#yesMessage").value.trim();
 
-    if (!yesMessage || !noMessage) {
-
-        alert("Inserisci entrambi i messaggi di risposta.");
-
-        return;
-    }
-
-
-    const cleanTexts =
-        texts
-            .map((text) => text.trim())
-            .filter(Boolean);
+            const noMessage =
+                $("#noMessage").value.trim();
 
 
-    if (cleanTexts.length === 0) {
-
-        alert("Devi inserire almeno una schermata.");
-
-        return;
-    }
+            const cleanTexts =
+                texts
+                    .map((text) => text.trim())
+                    .filter(Boolean);
 
 
-    declarationData = {
+            if (!creatorName) {
 
-        id: generateUniqueId(),
+                alert(
+                    "Inserisci il tuo nome."
+                );
 
-        gender: selectedGender,
-
-        creatorName,
-
-        targetName,
-
-        phone,
-
-        texts: cleanTexts,
-
-        yesMessage,
-
-        noMessage,
-
-        createdAt: Date.now()
-
-    };
+                return;
+            }
 
 
-    const encoded =
-        encodeData(declarationData);
+            if (!targetName) {
+
+                alert(
+                    "Inserisci il nome della persona."
+                );
+
+                return;
+            }
 
 
-    const url =
-        `${window.location.origin}${window.location.pathname}?d=${encoded}`;
+            if (!phone) {
+
+                alert(
+                    "Inserisci un numero WhatsApp valido."
+                );
+
+                return;
+            }
 
 
-    $("#generatedLink").value = url;
+            if (cleanTexts.length === 0) {
 
-    showScreen(generatedScreen);
+                alert(
+                    "Devi inserire almeno una schermata."
+                );
 
-});
+                return;
+            }
 
 
-/* =========================
-   ID
-========================= */
+            if (!yesMessage) {
+
+                alert(
+                    "Inserisci il messaggio per la risposta SÌ."
+                );
+
+                return;
+            }
+
+
+            if (!noMessage) {
+
+                alert(
+                    "Inserisci il messaggio per la risposta NO."
+                );
+
+                return;
+            }
+
+
+            declarationData = {
+
+                id: generateUniqueId(),
+
+                gender:
+                    selectedGender,
+
+                creatorName,
+
+                targetName,
+
+                phone,
+
+                texts:
+                    cleanTexts,
+
+                yesMessage,
+
+                noMessage,
+
+                createdAt:
+                    Date.now()
+
+            };
+
+
+            const encoded =
+                encodeData(
+                    declarationData
+                );
+
+
+            /*
+             * Usiamo l'URL reale della pagina.
+             * Funziona anche se il repository è dentro
+             * una sottocartella GitHub Pages.
+             */
+
+            const baseUrl =
+                window.location.href
+                    .split("?")[0]
+                    .split("#")[0];
+
+
+            const url =
+                `${baseUrl}?d=${encoded}`;
+
+
+            $("#generatedLink").value =
+                url;
+
+
+            showScreen(
+                generatedScreen
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GENERAZIONE ID UNICO
+========================================================= */
 
 function generateUniqueId() {
 
-    const chars =
+    const characters =
         "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
 
     let id = "";
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 10; i++) {
 
-        id += chars[
-            Math.floor(Math.random() * chars.length)
+        id += characters[
+            Math.floor(
+                Math.random() *
+                characters.length
+            )
         ];
 
     }
 
     return id;
-
 }
 
 
-/* =========================
-   CODIFICA
-========================= */
+/* =========================================================
+   CODIFICA DATI
+========================================================= */
 
 function encodeData(data) {
 
     const json =
         JSON.stringify(data);
 
-    const encoded =
-        btoa(
-            encodeURIComponent(json)
-                .replace(
-                    /%([0-9A-F]{2})/g,
-                    (_, p1) =>
-                        String.fromCharCode(
-                            parseInt(p1, 16)
-                        )
-                )
-        );
+    const bytes =
+        new TextEncoder().encode(json);
 
-    return encoded
+    let binary = "";
+
+    for (
+        let i = 0;
+        i < bytes.length;
+        i++
+    ) {
+
+        binary +=
+            String.fromCharCode(
+                bytes[i]
+            );
+
+    }
+
+    return btoa(binary)
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
-        .replace(/=/g, "");
-
+        .replace(/=+$/, "");
 }
 
+
+/* =========================================================
+   DECODIFICA DATI
+========================================================= */
 
 function decodeData(encoded) {
 
     try {
 
-        encoded =
+        let base64 =
             encoded
                 .replace(/-/g, "+")
                 .replace(/_/g, "/");
 
-        while (encoded.length % 4) {
-            encoded += "=";
+
+        while (
+            base64.length % 4 !== 0
+        ) {
+
+            base64 += "=";
+
         }
 
-        const binary =
-            atob(encoded);
 
-        const percentEncoded =
-            Array.from(binary)
-                .map(
-                    (char) =>
-                        "%" +
-                        char.charCodeAt(0)
-                            .toString(16)
-                            .padStart(2, "0")
-                )
-                .join("");
+        const binary =
+            atob(base64);
+
+
+        const bytes =
+            new Uint8Array(
+                binary.length
+            );
+
+
+        for (
+            let i = 0;
+            i < binary.length;
+            i++
+        ) {
+
+            bytes[i] =
+                binary.charCodeAt(i);
+
+        }
+
 
         const json =
-            decodeURIComponent(percentEncoded);
+            new TextDecoder().decode(
+                bytes
+            );
+
 
         return JSON.parse(json);
 
     } catch (error) {
 
-        return null;
+        console.error(
+            "Errore nella decodifica:",
+            error
+        );
 
+        return null;
     }
+}
+
+
+/* =========================================================
+   COPIA LINK
+========================================================= */
+
+if ($("#copyLinkButton")) {
+
+    $("#copyLinkButton").addEventListener(
+        "click",
+        async () => {
+
+            const input =
+                $("#generatedLink");
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    input.value
+                );
+
+                $("#copyLinkButton").textContent =
+                    "Copiato";
+
+                setTimeout(() => {
+
+                    $("#copyLinkButton").textContent =
+                        "Copia";
+
+                }, 2000);
+
+            } catch (error) {
+
+                input.select();
+
+                document.execCommand(
+                    "copy"
+                );
+
+            }
+
+        }
+    );
 
 }
 
 
-/* =========================
-   COPIA LINK
-========================= */
+/* =========================================================
+   CONDIVIDI LINK SU WHATSAPP
+========================================================= */
 
-$("#copyLinkButton").addEventListener("click", async () => {
+if ($("#shareButton")) {
 
-    const input = $("#generatedLink");
+    $("#shareButton").addEventListener(
+        "click",
+        () => {
 
-    try {
+            const url =
+                $("#generatedLink").value;
 
-        await navigator.clipboard.writeText(input.value);
+            const message =
+                `Ho qualcosa da dirti...\n\n${url}`;
 
-        $("#copyLinkButton").textContent = "Copiato";
+            const whatsappUrl =
+                `https://wa.me/?text=${encodeURIComponent(
+                    message
+                )}`;
 
-        setTimeout(() => {
+            window.open(
+                whatsappUrl,
+                "_blank"
+            );
 
-            $("#copyLinkButton").textContent = "Copia";
-
-        }, 2000);
-
-    } catch {
-
-        input.select();
-
-        document.execCommand("copy");
-
-    }
-
-});
-
-
-/* =========================
-   WHATSAPP CON LINK
-========================= */
-
-$("#shareButton").addEventListener("click", () => {
-
-    const url =
-        $("#generatedLink").value;
-
-    const message =
-        `Ho qualcosa da dirti...\n\n${url}`;
-
-    window.open(
-        `https://wa.me/?text=${encodeURIComponent(message)}`,
-        "_blank"
+        }
     );
 
-});
+}
 
 
-/* =========================
-   RESET
-========================= */
+/* =========================================================
+   NUOVA DICHIARAZIONE
+========================================================= */
 
-$("#newDeclarationButton").addEventListener("click", () => {
+if ($("#newDeclarationButton")) {
 
-    resetCreator();
+    $("#newDeclarationButton").addEventListener(
+        "click",
+        () => {
 
-    showScreen(createScreen);
+            resetCreator();
 
-    updateStep();
+            showScreen(
+                createScreen
+            );
 
-});
+            updateStep();
 
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RESET CREAZIONE
+========================================================= */
 
 function resetCreator() {
 
@@ -624,27 +822,51 @@ function resetCreator() {
 
     currentDeclarationPage = 0;
 
-    $("#creatorName").value = "";
-    $("#targetName").value = "";
-    $("#phoneNumber").value = "";
+    selectedAnswerMessage = "";
 
-    $("#yesMessage").value = "";
-    $("#noMessage").value = "";
 
-    $$(".gender-button").forEach((button) => {
-        button.classList.remove("selected");
-    });
+    if ($("#creatorName")) {
+        $("#creatorName").value = "";
+    }
 
-    textsContainer.innerHTML = "";
+    if ($("#targetName")) {
+        $("#targetName").value = "";
+    }
+
+    if ($("#phoneNumber")) {
+        $("#phoneNumber").value = "";
+    }
+
+    if ($("#yesMessage")) {
+        $("#yesMessage").value = "";
+    }
+
+    if ($("#noMessage")) {
+        $("#noMessage").value = "";
+    }
+
+
+    $$(".gender-button").forEach(
+        (button) => {
+            button.classList.remove(
+                "selected"
+            );
+        }
+    );
+
+
+    if (textsContainer) {
+        textsContainer.innerHTML = "";
+    }
+
 
     updateAddButton();
-
 }
 
 
-/* =========================
-   DICHIARAZIONE DA LINK
-========================= */
+/* =========================================================
+   CARICA DICHIARAZIONE DAL LINK
+========================================================= */
 
 function loadDeclarationFromUrl() {
 
@@ -653,39 +875,69 @@ function loadDeclarationFromUrl() {
             window.location.search
         );
 
+
     const encoded =
         params.get("d");
 
+
     if (!encoded) {
+
         return;
+
     }
+
 
     const data =
         decodeData(encoded);
 
-    if (!data || !data.texts) {
+
+    if (
+        !data ||
+        !Array.isArray(data.texts) ||
+        !data.targetName ||
+        !data.creatorName ||
+        !data.phone
+    ) {
 
         showInvalidDeclaration();
 
         return;
+
     }
 
-    declarationData = data;
+
+    declarationData =
+        data;
+
 
     currentDeclarationPage = 0;
 
+
     showDeclarationPage();
 
-    showScreen(declarationScreen);
+
+    showScreen(
+        declarationScreen
+    );
 
 }
 
 
-/* =========================
-   PAGINA DICHIARAZIONE
-========================= */
+/* =========================================================
+   MOSTRA PAGINA DELLA DICHIARAZIONE
+========================================================= */
 
 function showDeclarationPage() {
+
+    if (
+        !declarationData ||
+        !declarationData.texts
+    ) {
+
+        return;
+
+    }
+
 
     const text =
         declarationData.texts[
@@ -693,208 +945,349 @@ function showDeclarationPage() {
         ];
 
 
-    $("#declarationRecipient").textContent =
-        `Per ${declarationData.targetName}`;
+    if ($("#declarationRecipient")) {
+
+        $("#declarationRecipient").textContent =
+            `Per ${declarationData.targetName}`;
+
+    }
 
 
-    $("#declarationText").style.animation = "none";
+    if ($("#declarationText")) {
 
-    void $("#declarationText").offsetWidth;
-
-    $("#declarationText").style.animation =
-        "declarationIn 0.7s ease";
+        $("#declarationText").style.animation =
+            "none";
 
 
-    $("#declarationText").textContent =
-        text;
+        void $("#declarationText").offsetWidth;
 
 
-    $("#declarationProgress").textContent =
-        `${currentDeclarationPage + 1} / ${declarationData.texts.length}`;
+        $("#declarationText").style.animation =
+            "declarationIn 0.7s ease";
 
 
-    if (
-        currentDeclarationPage ===
-        declarationData.texts.length - 1
-    ) {
+        $("#declarationText").textContent =
+            text;
 
-        $("#continueButton").textContent =
-            "Ho finito";
+    }
 
-    } else {
 
-        $("#continueButton").textContent =
-            "Continua";
+    if ($("#declarationProgress")) {
+
+        $("#declarationProgress").textContent =
+            `${currentDeclarationPage + 1} / ${declarationData.texts.length}`;
+
+    }
+
+
+    if ($("#continueButton")) {
+
+        if (
+            currentDeclarationPage ===
+            declarationData.texts.length - 1
+        ) {
+
+            $("#continueButton").textContent =
+                "Ho finito";
+
+        } else {
+
+            $("#continueButton").textContent =
+                "Continua";
+
+        }
 
     }
 
 }
 
 
-/* =========================
-   CONTINUA
-========================= */
+/* =========================================================
+   CONTINUA DICHIARAZIONE
+========================================================= */
 
-$("#continueButton").addEventListener("click", () => {
+if ($("#continueButton")) {
 
-    if (
-        currentDeclarationPage <
-        declarationData.texts.length - 1
-    ) {
+    $("#continueButton").addEventListener(
+        "click",
+        () => {
 
-        currentDeclarationPage++;
+            if (
+                !declarationData
+            ) {
 
-        showDeclarationPage();
+                return;
 
-    } else {
-
-        showFinalQuestion();
-
-    }
-
-});
+            }
 
 
-/* =========================
-   DOMANDA
-========================= */
+            if (
+                currentDeclarationPage <
+                declarationData.texts.length - 1
+            ) {
+
+                currentDeclarationPage++;
+
+                showDeclarationPage();
+
+            } else {
+
+                showFinalQuestion();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DOMANDA FINALE
+========================================================= */
 
 function showFinalQuestion() {
 
-    $("#questionTitle").textContent =
-        `${declarationData.creatorName}, vuoi stare con me?`;
+    if (!declarationData) {
+        return;
+    }
 
-    showScreen(questionScreen);
+
+    /*
+     * La domanda viene rivolta alla persona
+     * che sta leggendo la dichiarazione.
+     */
+
+    if ($("#questionTitle")) {
+
+        $("#questionTitle").textContent =
+            `${declarationData.targetName}, vuoi stare con me?`;
+
+    }
+
+
+    showScreen(
+        questionScreen
+    );
 
 }
 
 
-/* =========================
+/* =========================================================
    RISPOSTA SÌ
-========================= */
+========================================================= */
 
-$("#yesButton").addEventListener("click", () => {
+if ($("#yesButton")) {
 
-    showResult(
-        true
+    $("#yesButton").addEventListener(
+        "click",
+        () => {
+
+            showResult(true);
+
+        }
     );
 
-});
+}
 
 
-/* =========================
+/* =========================================================
    RISPOSTA NO
-========================= */
+========================================================= */
 
-$("#noButton").addEventListener("click", () => {
+if ($("#noButton")) {
 
-    showResult(
-        false
+    $("#noButton").addEventListener(
+        "click",
+        () => {
+
+            showResult(false);
+
+        }
     );
 
-});
+}
 
 
-/* =========================
-   RISULTATO
-========================= */
-
-let selectedAnswerMessage = "";
+/* =========================================================
+   MOSTRA RISULTATO
+========================================================= */
 
 function showResult(isYes) {
 
+    if (!declarationData) {
+        return;
+    }
+
+
     if (isYes) {
 
-        $("#resultEyebrow").textContent =
-            "SÌ";
+        if ($("#resultEyebrow")) {
+            $("#resultEyebrow").textContent =
+                "SÌ";
+        }
 
-        $("#resultTitle").textContent =
-            "Hai detto sì.";
+        if ($("#resultTitle")) {
+            $("#resultTitle").textContent =
+                "Hai detto sì.";
+        }
 
         selectedAnswerMessage =
             declarationData.yesMessage;
 
     } else {
 
-        $("#resultEyebrow").textContent =
-            "NO";
+        if ($("#resultEyebrow")) {
+            $("#resultEyebrow").textContent =
+                "NO";
+        }
 
-        $("#resultTitle").textContent =
-            "Hai risposto sinceramente.";
+        if ($("#resultTitle")) {
+            $("#resultTitle").textContent =
+                "Hai risposto sinceramente.";
+        }
 
         selectedAnswerMessage =
             declarationData.noMessage;
 
     }
 
-    $("#resultMessage").textContent =
-        selectedAnswerMessage;
 
-    showScreen(resultScreen);
+    if ($("#resultMessage")) {
+
+        $("#resultMessage").textContent =
+            selectedAnswerMessage;
+
+    }
+
+
+    showScreen(
+        resultScreen
+    );
 
 }
 
 
-/* =========================
+/* =========================================================
    WHATSAPP RISPOSTA
-========================= */
+========================================================= */
 
-$("#whatsappButton").addEventListener("click", () => {
+if ($("#whatsappButton")) {
 
-    const phone =
-        declarationData.phone.replace(
+    $("#whatsappButton").addEventListener(
+        "click",
+        () => {
+
+            if (
+                !declarationData ||
+                !declarationData.phone
+            ) {
+
+                return;
+
+            }
+
+
+            const phone =
+                declarationData.phone
+                    .replace(/\D/g, "");
+
+
+            if (!phone) {
+
+                alert(
+                    "Numero WhatsApp non valido."
+                );
+
+                return;
+
+            }
+
+
+            const message =
+                selectedAnswerMessage;
+
+
+            const whatsappUrl =
+                `https://wa.me/${phone}?text=${encodeURIComponent(
+                    message
+                )}`;
+
+
+            window.location.href =
+                whatsappUrl;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   NORMALIZZA NUMERO TELEFONO
+========================================================= */
+
+function normalizePhone(phone) {
+
+    if (!phone) {
+        return "";
+    }
+
+
+    let clean =
+        phone.replace(
             /\D/g,
             ""
         );
 
-    const message =
-        selectedAnswerMessage;
 
-    const whatsappUrl =
-        `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-
-    window.location.href =
-        whatsappUrl;
-
-});
-
-
-/* =========================
-   NUMERO
-========================= */
-
-function normalizePhone(phone) {
-
-    let clean =
-        phone.replace(/\D/g, "");
-
-    if (clean.startsWith("00")) {
+    if (
+        clean.startsWith("00")
+    ) {
 
         clean =
             clean.substring(2);
 
     }
 
-    if (clean.startsWith("39")) {
 
-        return "+" + clean;
+    /*
+     * Numero italiano:
+     * se l'utente inserisce 3331234567
+     * diventa +393331234567
+     */
+
+    if (
+        clean.startsWith("39")
+    ) {
+
+        if (
+            clean.length >= 11
+        ) {
+
+            return `+${clean}`;
+
+        }
 
     }
 
-    if (clean.length >= 9) {
 
-        return "+39" + clean;
+    if (
+        clean.length >= 9
+    ) {
+
+        return `+39${clean}`;
 
     }
+
 
     return "";
-
 }
 
 
-/* =========================
+/* =========================================================
    LINK NON VALIDO
-========================= */
+========================================================= */
 
 function showInvalidDeclaration() {
 
@@ -907,27 +1300,44 @@ function showInvalidDeclaration() {
                 justify-content:center;
                 padding:30px;
                 text-align:center;
-                font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+                font-family:
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Helvetica Neue',
+                    Arial,
+                    sans-serif;
                 background:#0b0b0d;
                 color:white;
             "
         >
 
-            <div>
+            <div
+                style="
+                    max-width:500px;
+                "
+            >
 
                 <p
                     style="
                         color:#9b9ba3;
                         letter-spacing:3px;
                         font-size:11px;
+                        margin-bottom:25px;
                     "
                 >
                     DICHIARATI
                 </p>
 
-                <h1>
+                <h1
+                    style="
+                        font-size:42px;
+                        line-height:1;
+                        letter-spacing:-2px;
+                        margin-bottom:20px;
+                    "
+                >
                     Questa dichiarazione
-                    non esiste più.
+                    non esiste.
                 </h1>
 
                 <p
@@ -937,19 +1347,19 @@ function showInvalidDeclaration() {
                     "
                 >
                     Il link potrebbe essere
-                    incompleto o non valido.
+                    incompleto, modificato
+                    oppure non valido.
                 </p>
 
             </div>
 
         </main>
     `;
-
 }
 
 
-/* =========================
+/* =========================================================
    AVVIO
-========================= */
+========================================================= */
 
 loadDeclarationFromUrl();
